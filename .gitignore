@@ -29,8 +29,7 @@ var/
 *.code-workspace
 
 # Environment variables
-.env
-.env.example
+
 # Model files
 models/*.pkl
 models/*.joblib
