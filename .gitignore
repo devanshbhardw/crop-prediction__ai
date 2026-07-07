@@ -30,7 +30,7 @@ var/
 
 # Environment variables
 .env
-
+.env.example
 # Model files
 models/*.pkl
 models/*.joblib
