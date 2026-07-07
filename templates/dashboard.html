@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="mb-4 p-4 rounded-4" style="background: rgba(6, 10, 24, 0.55); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(10px);">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h2 class="mb-1">AI Crop Command Center</h2>
+                <p class="mb-0 text-white-50">Your intelligent workspace for predictions, weather, and farm insights.</p>
+            </div>
+            <span class="weather-pill">Live AI Intelligence</span>
+        </div>
+    </div>
+    <!-- Welcome and Quick Stats Row -->
+    <div class="row mb-4">
+        <div class="col-12 col-xl-8">
+            <div class="glass-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h2 class="card-title mb-1">Welcome back, {{ current_user.username }}!</h2>
+                            <p class="text-muted mb-0">Here's what's happening with your crops</p>
+                        </div>
+                        <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#predictionModal">
+                            <i class="fas fa-plus-circle me-2"></i>New Prediction
+                        </a>
+                    </div>
+                    
+                    <!-- Feature Cards -->
+                    <div class="row g-4 mt-2 mb-4">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('ai_insights') }}" class="text-decoration-none">
+                                <div class="glass-card bg-gradient h-100 hover-lift">
+                                    <div class="card-body text-center py-4">
+                                        <i class="fas fa-brain fa-3x mb-3 text-info"></i>
+                                        <h4>AI Insights</h4>
+                                        <p class="text-muted mb-0">Get AI-powered recommendations and predictions</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('weather') }}" class="text-decoration-none">
+                                <div class="glass-card bg-gradient h-100 hover-lift">
+                                    <div class="card-body text-center py-4">
+                                        <i class="fas fa-cloud-sun fa-3x mb-3 text-warning"></i>
+                                        <h4>Weather</h4>
+                                        <p class="text-muted mb-0">Real-time weather data and forecasts</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('analytics') }}" class="text-decoration-none">
+                                <div class="glass-card bg-gradient h-100 hover-lift">
+                                    <div class="card-body text-center py-4">
+                                        <i class="fas fa-chart-line fa-3x mb-3 text-success"></i>
+                                        <h4>Analytics</h4>
+                                        <p class="text-muted mb-0">Detailed data analysis and insights</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row g-4 mt-2">
+                        <div class="col-12 col-md-3">
+                            <div class="glass-card bg-success bg-opacity-25">
+                                <div class="card-body">
+                                    <h6 class="text-success mb-2">Total Predictions</h6>
+                                    <h3 class="mb-0">{{ predictions|length }}</h3>
+                                    <small class="text-muted">All time</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="glass-card bg-info bg-opacity-25">
+                                <div class="card-body">
+                                    <h6 class="text-info mb-2">Unique Crops</h6>
+                                    <h3 class="mb-0">{{ predictions|map(attribute='crop')|unique|list|length }}</h3>
+                                    <small class="text-muted">Different types</small>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="col-12 col-md-3">
+                            <div class="glass-card bg-warning bg-opacity-25">
+                                <div class="card-body">
+                                    <h6 class="text-warning mb-2">Recent Activity</h6>
+                                    <h3 class="mb-0">{{ recent_predictions_count }}</h3>
+                                    <small class="text-muted">Last 7 days</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="glass-card bg-primary bg-opacity-25">
+                                <div class="card-body">
+                                    <h6 class="text-primary mb-2">Avg Yield</h6>
+                                    <h3 class="mb-0">{{ "%.1f"|format(predictions|map(attribute='yield_value')|sum / predictions|length if predictions else 0) }}</h3>
+                                    <small class="text-muted">Tons per hectare</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-xl-4">
+            <div class="glass-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Quick Actions</h5>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('predict') }}" class="btn btn-outline-light">
+                            <i class="fas fa-chart-line me-2"></i>Make a Prediction
+                        </a>
+                        <button class="btn btn-outline-light" onclick="downloadPredictions()">
+                            <i class="fas fa-download me-2"></i>Export Predictions
+                        </button>
+                        <a href="#" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#analysisModal">
+                            <i class="fas fa-chart-bar me-2"></i>View Analysis
+                        </a>
+                        <a href="{{ url_for('profile') }}" class="btn btn-outline-light">
+                            <i class="fas fa-user-cog me-2"></i>Profile Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Predictions and Charts Row -->
+    <div class="row g-4">
+        <div class="col-12 col-xl-8">
+            <div class="glass-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="card-title mb-0">Recent Predictions</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-light btn-sm" onclick="filterPredictions('week')">Week</button>
+                            <button class="btn btn-outline-light btn-sm" onclick="filterPredictions('month')">Month</button>
+                            <button class="btn btn-outline-light btn-sm" onclick="filterPredictions('all')">All</button>
+                        </div>
+                    </div>
+                    <!-- Prediction Result Area (for new predictions) -->
+                    <div id="result" class="mb-4" style="display: none;">
+                        <div class="alert alert-success">
+                            <h4>New Prediction Result</h4>
+                            <div id="prediction"></div>
+                        </div>
+                    </div>
+                    
+                    {% if predictions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Crop</th>
+                                    <th>Environment</th>
+                                    <th>Soil</th>
+                                    <th>Predicted Yield</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prediction in predictions %}
+                                <tr data-prediction-id="{{ prediction.id }}">
+                                    <td>{{ prediction.date[:16]|replace('T', ' ') }}</td>
+                                    <td>
+                                        <span class="badge bg-success">{{ prediction.crop|title }}</span>
+                                    </td>
+                                    <td>
+                                        <small class="d-block text-muted">Temp: {{ "%.1f"|format(prediction.temperature) }}°C</small>
+                                        <small class="d-block text-muted">Humidity: {{ prediction.humidity }}%</small>
+                                        <small class="d-block text-muted">Rain: {{ prediction.rainfall }}mm</small>
+                                    </td>
+                                    <td>
+                                        <small class="d-block text-muted">N: {{ prediction.nitrogen }}kg/ha</small>
+                                        <small class="d-block text-muted">P: {{ prediction.phosphorus }}kg/ha</small>
+                                        <small class="d-block text-muted">K: {{ prediction.potassium }}kg/ha</small>
+                                        <small class="d-block text-muted">pH: {{ prediction.ph }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="h5 mb-0">{{ "%.2f"|format(prediction.yield_value) }}</span>
+                                        <small class="d-block text-muted">tons/ha</small>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-info" 
+                                                    onclick="showPredictionDetails('{{ prediction.id }}')">
+                                                <i class="fas fa-info-circle"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger delete-prediction" 
+                                                    data-prediction-id="{{ prediction.id }}">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-seedling fa-3x mb-3 text-muted"></i>
+                        <p class="lead text-muted">No predictions yet. Start by making your first prediction!</p>
+                        <button class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#predictionModal">
+                            <i class="fas fa-plus-circle me-2"></i>Make First Prediction
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-xl-4">
+            <div class="glass-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Yield Analysis</h5>
+                    <div class="mb-4">
+                        <canvas id="yieldChart"></canvas>
+                    </div>
+                    <h5 class="card-title mb-4">Trends Over Time</h5>
+                    <div>
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Prediction Modal -->
+<div class="modal fade" id="predictionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title text-white">New Crop Yield Prediction</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="predictionForm" class="needs-validation" novalidate>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label for="crop_type" class="form-label text-white">Crop Type</label>
+                            <select class="form-select bg-dark text-white" id="crop_type" name="crop_type" required>
+                                <option value="">Select a crop...</option>
+                                <option value="rice">Rice</option>
+                                <option value="wheat">Wheat</option>
+                                <option value="maize">Maize</option>
+                                <option value="chickpea">Chickpea</option>
+                                <option value="kidneybeans">Kidney Beans</option>
+                                <option value="pigeonpeas">Pigeon Peas</option>
+                                <option value="mothbeans">Moth Beans</option>
+                                <option value="mungbean">Mung Bean</option>
+                                <option value="blackgram">Black Gram</option>
+                                <option value="lentil">Lentil</option>
+                                <option value="pomegranate">Pomegranate</option>
+                                <option value="banana">Banana</option>
+                                <option value="mango">Mango</option>
+                                <option value="grapes">Grapes</option>
+                                <option value="watermelon">Watermelon</option>
+                                <option value="muskmelon">Muskmelon</option>
+                                <option value="apple">Apple</option>
+                                <option value="orange">Orange</option>
+                                <option value="papaya">Papaya</option>
+                                <option value="coconut">Coconut</option>
+                                <option value="cotton">Cotton</option>
+                                <option value="jute">Jute</option>
+                                <option value="coffee">Coffee</option>
+                            </select>
+                            <div class="invalid-feedback text-white">Please select a crop type.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="temperature" class="form-label text-white">Temperature (°C)</label>
+                            <input type="number" class="form-control bg-dark text-white" id="temperature" name="temperature" 
+                                   required min="0" max="50" step="0.1" placeholder="20-35">
+                            <div class="invalid-feedback text-white">Please enter a valid temperature (0-50°C).</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="humidity" class="form-label text-white">Humidity (%)</label>
+                            <input type="number" class="form-control bg-dark text-white" id="humidity" name="humidity" 
+                                   required min="0" max="100" step="1" placeholder="30-90">
+                            <div class="invalid-feedback text-white">Please enter a valid humidity percentage (0-100%).</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="rainfall" class="form-label text-white">Rainfall (mm)</label>
+                            <input type="number" class="form-control bg-dark text-white" id="rainfall" name="rainfall" 
+                                   required min="0" step="0.1" placeholder="Annual rainfall">
+                            <div class="invalid-feedback text-white">Please enter a valid rainfall amount.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="nitrogen" class="form-label text-white">Nitrogen (kg/ha)</label>
+                            <input type="number" class="form-control bg-dark text-white" id="nitrogen" name="nitrogen" 
+                                   required min="0" step="1" placeholder="0-140">
+                            <div class="invalid-feedback text-white">Please enter a valid nitrogen value.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="phosphorus" class="form-label text-white">Phosphorus (kg/ha)</label>
+                            <input type="number" class="form-control bg-dark text-white" id="phosphorus" name="phosphorus" 
+                                   required min="0" step="1" placeholder="5-145">
+                            <div class="invalid-feedback text-white">Please enter a valid phosphorus value.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="potassium" class="form-label text-white">Potassium (kg/ha)</label>
+                            <input type="number" class="form-control bg-dark text-white" id="potassium" name="potassium" 
+                                   required min="0" step="1" placeholder="5-205">
+                            <div class="invalid-feedback text-white">Please enter a valid potassium value.</div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="ph" class="form-label text-white">pH Level</label>
+                            <input type="number" class="form-control bg-dark text-white" id="ph" name="ph" 
+                                   required min="0" max="14" step="0.1" placeholder="0-14">
+                            <div class="invalid-feedback text-white">Please enter a valid pH value (0-14).</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success" form="predictionForm">
+                    <i class="fas fa-chart-line me-2"></i>Get Prediction
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Initialize charts when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const predictionData = {{ predictions|tojson }};
+    
+    // Prepare data for charts
+    function prepareChartData() {
+        // Calculate averages by crop type
+        const cropData = predictionData.reduce((acc, p) => {
+            if (!acc[p.crop]) {
+                acc[p.crop] = {
+                    sum: 0,
+                    count: 0
+                };
+            }
+            acc[p.crop].sum += p.yield_value;
+            acc[p.crop].count += 1;
+            return acc;
+        }, {});
+
+        const labels = Object.keys(cropData);
+        const data = labels.map(crop => cropData[crop].sum / cropData[crop].count);
+
+        return { labels, data };
+    }
+
+    // Get the chart data
+    const { labels, data } = prepareChartData();
+
+    // Yield by Crop Type Chart
+    const yieldCtx = document.getElementById('yieldChart').getContext('2d');
+    new Chart(yieldCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Average Yield by Crop',
+                data: data,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+
+    // Predictions Over Time Chart
+    const timeCtx = document.getElementById('timeChart').getContext('2d');
+    const timeChartData = {
+        labels: predictionData.map(p => new Date(p.date).toLocaleDateString('en-US')),
+        data: predictionData.map(p => p.yield_value)
+    };
+    
+    new Chart(timeCtx, {
+        type: 'line',
+        data: {
+            labels: timeChartData.labels,
+            datasets: [{
+                label: 'Predictions Over Time',
+                data: timeChartData.data,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+});
+
+// Function to download predictions as CSV
+function downloadPredictions() {
+    const predictions = {{ predictions|tojson }};
+    let csv = 'Date,Crop,Yield,Temperature,Humidity,Rainfall,Nitrogen,Phosphorus,Potassium,pH\n';
+    
+    predictions.forEach(p => {
+        csv += `${p.date},${p.crop},${p.yield_value},${p.temperature},${p.humidity},${p.rainfall},${p.nitrogen},${p.phosphorus},${p.potassium},${p.ph}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'predictions.csv');
+    a.click();
+}
+
+// Function to filter predictions
+function filterPredictions(period) {
+    // Implementation for filtering predictions by time period
+    // This will be handled by a backend route
+    window.location.href = `{{ url_for('dashboard') }}?period=${period}`;
+}
+</script>
+
+{# Prediction submit handling is implemented centrally in `static/js/main.js` #}
+{% endblock %}

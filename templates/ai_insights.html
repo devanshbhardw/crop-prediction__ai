@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="glass-card">
+                <div class="card-body">
+                    <h2 class="card-title">AI-Powered Crop Insights</h2>
+                    <p class="text-muted">Advanced analytics and AI-driven recommendations for your crops</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="glass-card h-100">
+                <div class="card-body">
+                    <h4 class="mb-4">Crop Recommendations</h4>
+                    <form id="aiAnalysisForm" class="mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Location</label>
+                                <input type="text" class="form-control bg-dark text-white" id="location" placeholder="Enter location" list="location_suggestions">
+                                <datalist id="location_suggestions"></datalist>
+                                <small id="locationMeta" class="text-muted d-block mt-1"></small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Land Area (hectares)</label>
+                                <input type="number" class="form-control bg-dark text-white" id="area" placeholder="Enter area">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Crop to evaluate (optional)</label>
+                                <input type="text" class="form-control bg-dark text-white" id="crop_eval" placeholder="e.g. Maize">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Soil pH</label>
+                                <input type="number" step="0.1" class="form-control bg-dark text-white" id="ph" placeholder="e.g. 6.5">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Nitrogen (kg/ha)</label>
+                                <input type="number" step="0.01" class="form-control bg-dark text-white" id="nitrogen" placeholder="e.g. 0.25">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Phosphorus (kg/ha)</label>
+                                <input type="number" step="0.01" class="form-control bg-dark text-white" id="phosphorus" placeholder="e.g. 0.15">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Potassium (kg/ha)</label>
+                                <input type="number" step="0.01" class="form-control bg-dark text-white" id="potassium" placeholder="e.g. 0.30">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Annual Rainfall (mm)</label>
+                                <input type="number" step="1" class="form-control bg-dark text-white" id="rainfall" placeholder="e.g. 600">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Season</label>
+                                <select id="season" class="form-select bg-dark text-white">
+                                    <option value="general">General</option>
+                                    <option value="kharif">Kharif</option>
+                                    <option value="rabi">Rabi</option>
+                                    <option value="summer">Summer</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="irrigation">
+                                    <label class="form-check-label text-white ms-2" for="irrigation">Irrigation available</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Preferred crops (comma-separated)</label>
+                                <input type="text" class="form-control bg-dark text-white" id="preferred" placeholder="e.g. Wheat, Maize">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success" id="runAIQueryBtn">
+                                    <i class="fas fa-robot me-2"></i>Get AI Recommendations
+                                </button>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="prefer_requested">
+                                    <label class="form-check-label text-white ms-2" for="prefer_requested">Prefer requested crop (bias results)</label>
+                                </div>
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="use_openai">
+                                    <label class="form-check-label text-white ms-2" for="use_openai">Enrich reasoning with OpenAI (optional)</label>
+                                </div>
+                                <small class="text-muted d-block">OpenAI will be used only if the server has a valid API key configured.</small>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="aiRecommendations" style="display: none;">
+                        <h5 class="mb-3">AI Recommendations</h5>
+                        <div class="recommendations-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="glass-card mb-4">
+                <div class="card-body">
+                    <h4>Historical Analysis</h4>
+                    <canvas id="successRateChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-body">
+                    <h4>AI Confidence Scores</h4>
+                    <div class="list-group bg-transparent">
+                        <div class="list-group-item bg-dark text-white border-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Crop Selection</span>
+                                <span class="badge bg-success">98%</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item bg-dark text-white border-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Yield Prediction</span>
+                                <span class="badge bg-success">95%</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item bg-dark text-white border-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Pest Risk</span>
+                                <span class="badge bg-warning">85%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Success Rate Chart
+    const ctx = document.getElementById('successRateChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Successful', 'Partial', 'Needs Improvement'],
+            datasets: [{
+                data: [75, 15, 10],
+                backgroundColor: [
+                    'rgba(40, 167, 69, 0.8)',
+                    'rgba(255, 193, 7, 0.8)',
+                    'rgba(220, 53, 69, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+
+    // Handle AI Analysis Form - call backend endpoint
+    document.getElementById('aiAnalysisForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('runAIQueryBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Running...';
+
+        const recommendations = document.getElementById('aiRecommendations');
+        const content = recommendations.querySelector('.recommendations-content');
+        content.innerHTML = '';
+
+            const payload = {
+            location: document.getElementById('location').value,
+            area: document.getElementById('area').value,
+                crop: document.getElementById('crop_eval').value.trim(),
+            ph: document.getElementById('ph').value,
+            nitrogen: document.getElementById('nitrogen').value,
+            phosphorus: document.getElementById('phosphorus').value,
+            potassium: document.getElementById('potassium').value,
+            rainfall: document.getElementById('rainfall').value,
+            season: document.getElementById('season').value,
+            irrigation: document.getElementById('irrigation').checked,
+            preferred_crops: document.getElementById('preferred').value.split(',').map(s => s.trim()).filter(Boolean),
+            prefer_requested: document.getElementById('prefer_requested').checked,
+            use_openai: document.getElementById('use_openai').checked
+        };
+
+        try {
+            const resp = await fetch('/api/ai/recommendations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.error || 'AI service returned an error');
+            }
+
+            const data = await resp.json();
+            // show pollution warning if present
+            if (data.pollution_risk) {
+                content.innerHTML = `<div class="alert alert-warning">High local air pollution detected (PM2.5: ${data.pollution_level_pm2_5}). Irrigation and water quality may be affected.</div>` + content.innerHTML;
+            }
+
+            // render results
+            content.innerHTML = `
+                <div class="alert alert-success">
+                    <h6 class="alert-heading">Primary Recommendation</h6>
+                    <p><strong>${data.primary.crop}</strong> — Confidence: ${data.primary.confidence}%</p>
+                    <p>Expected yield: ${data.primary.expected_yield_t_per_ha} t/ha</p>
+                </div>
+            `;
+
+            if (data.alternative) {
+                content.innerHTML += `
+                    <div class="alert alert-secondary">
+                        <h6 class="alert-heading">Alternative</h6>
+                        <p><strong>${data.alternative.crop}</strong> — Confidence: ${data.alternative.confidence}%</p>
+                        <p>Expected yield: ${data.alternative.expected_yield_t_per_ha} t/ha</p>
+                    </div>
+                `;
+            }
+
+            if (data.requested) {
+                content.innerHTML = `
+                    <div class="alert alert-primary">
+                        <h6 class="alert-heading">Requested Crop Evaluation</h6>
+                        <p><strong>${data.requested.crop}</strong> — Confidence: ${data.requested.confidence}%</p>
+                        <p>Expected yield: ${data.requested.expected_yield_t_per_ha} t/ha</p>
+                    </div>
+                ` + content.innerHTML;
+            }
+
+            // show OpenAI reasoning if available
+            if (data.nl_reasoning) {
+                content.innerHTML = `<div class="alert alert-dark"><h6 class="alert-heading">AI Explanation</h6><p>${data.nl_reasoning}</p></div>` + content.innerHTML;
+            }
+
+            if (data.reasoning && data.reasoning.length) {
+                content.innerHTML += `
+                    <div class="alert alert-info mt-2">
+                        <h6 class="alert-heading">Reasoning</h6>
+                        <ul>${data.reasoning.map(r => `<li>${r}</li>`).join('')}</ul>
+                    </div>
+                `;
+            }
+
+            recommendations.style.display = 'block';
+        } catch (error) {
+            content.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+            recommendations.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-robot me-2"></i>Get AI Recommendations';
+        }
+    });
+
+    // Location autocomplete and auto-fill rainfall/air quality
+    const locationInput = document.getElementById('location');
+    const locationList = document.getElementById('location_suggestions');
+    const locationMeta = document.getElementById('locationMeta');
+    let geocodeTimer;
+
+    locationInput.addEventListener('input', function() {
+        const q = this.value.trim();
+        if (geocodeTimer) clearTimeout(geocodeTimer);
+        if (q.length < 2) return;
+        geocodeTimer = setTimeout(async () => {
+            try {
+                const resp = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=en`);
+                const j = await resp.json();
+                const results = j.results || [];
+                locationList.innerHTML = '';
+                results.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = `${r.name}${r.country ? ', ' + r.country : ''}`;
+                    locationList.appendChild(opt);
+                });
+            } catch (e) {
+                // ignore
+            }
+        }, 300);
+    });
+
+    locationInput.addEventListener('change', async function() {
+        const q = this.value.trim();
+        if (!q) return;
+        try {
+            const resp = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en`);
+            const j = await resp.json();
+            const r = (j.results || [])[0];
+            if (!r) return;
+            locationMeta.textContent = `Detected: ${r.name}, ${r.country} (lat:${r.latitude.toFixed(2)}, lon:${r.longitude.toFixed(2)})`;
+
+            // fetch archive precipitation (last 365 days) to auto-fill annual rainfall
+            const end_date = new Date().toISOString().slice(0,10);
+            const start = new Date(); start.setDate(start.getDate() - 365);
+            const start_date = start.toISOString().slice(0,10);
+            try {
+                const aresp = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${r.latitude}&longitude=${r.longitude}&start_date=${start_date}&end_date=${end_date}&daily=precipitation_sum&timezone=auto`);
+                const ad = await aresp.json();
+                const precip = (ad.daily && ad.daily.precipitation_sum) || [];
+                const total = precip.reduce((s,v)=>s+Number(v||0),0);
+                if (total) document.getElementById('rainfall').value = Math.round(total);
+            } catch (e) {
+                // ignore
+            }
+
+            // fetch recent air quality pm2_5 to show quick risk indicator
+            try {
+                const aq = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${r.latitude}&longitude=${r.longitude}&hourly=pm2_5&timezone=auto`);
+                const aqj = await aq.json();
+                const pm = (aqj.hourly && aqj.hourly.pm2_5) || [];
+                if (pm && pm.length) {
+                    const vals = pm.filter(v=>v!=null).map(Number);
+                    const avg = vals.reduce((s,v)=>s+v,0)/vals.length;
+                    const el = document.createElement('div');
+                    el.className = 'mt-2 small text-warning';
+                    el.textContent = `Approx. PM2.5: ${avg.toFixed(1)} µg/m³`;
+                    if (avg > 25) el.className = 'mt-2 small text-danger';
+                    locationMeta.parentNode.appendChild(el);
+                }
+            } catch (e) {
+                // ignore
+            }
+        } catch (e) {
+            // ignore
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="glass-card">
+                <div class="card-body">
+                    <h2 class="card-title">Data Analytics</h2>
+                    <p class="text-muted">Advanced analytics and insights for your agricultural data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="glass-card mb-4">
+                <div class="card-body">
+                    <h4 class="mb-4">Yield Analysis</h4>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="glass-card bg-success bg-opacity-25">
+                                <div class="card-body">
+                                    <h6 class="text-success">Average Yield</h6>
+                                    <h3>4.8 tons/ha</h3>
+                                    <small class="text-success">↑ 12% from last year</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="glass-card bg-info bg-opacity-25">
+                                <div class="card-body">
+                                    <h6 class="text-info">Best Performing</h6>
+                                    <h3>Wheat</h3>
+                                    <small class="text-info">5.2 tons/ha</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="glass-card bg-warning bg-opacity-25">
+                                <div class="card-body">
+                                    <h6 class="text-warning">Growth Potential</h6>
+                                    <h3>+18%</h3>
+                                    <small class="text-warning">With optimizations</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <canvas id="yieldTrendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-body">
+                    <h4 class="mb-4">Crop Performance Matrix</h4>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>Success Rate</th>
+                                    <th>ROI</th>
+                                    <th>Water Usage</th>
+                                    <th>Market Demand</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Wheat</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" style="width: 85%">85%</div>
+                                        </div>
+                                    </td>
+                                    <td class="text-success">+32%</td>
+                                    <td>Medium</td>
+                                    <td>
+                                        <i class="fas fa-arrow-up text-success"></i> High
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Rice</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-info" style="width: 75%">75%</div>
+                                        </div>
+                                    </td>
+                                    <td class="text-info">+28%</td>
+                                    <td>High</td>
+                                    <td>
+                                        <i class="fas fa-arrows-alt-h text-warning"></i> Stable
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="glass-card mb-4">
+                <div class="card-body">
+                    <h4 class="mb-3">Resource Utilization</h4>
+                    <canvas id="resourceChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-card mb-4">
+                <div class="card-body">
+                    <h4 class="mb-3">Recommendations</h4>
+                    <div class="list-group bg-transparent">
+                        <div class="list-group-item bg-dark text-white border-light">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Optimize Irrigation</h6>
+                                <small class="text-success">High Impact</small>
+                            </div>
+                            <p class="mb-1">Reduce water usage by 15% through smart scheduling</p>
+                        </div>
+                        <div class="list-group-item bg-dark text-white border-light">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Crop Rotation</h6>
+                                <small class="text-info">Medium Impact</small>
+                            </div>
+                            <p class="mb-1">Implement suggested rotation pattern</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-body">
+                    <h4 class="mb-3">Export Analysis</h4>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-light" onclick="exportPDF()">
+                            <i class="fas fa-file-pdf me-2"></i>Export as PDF
+                        </button>
+                        <button class="btn btn-outline-light" onclick="exportCSV()">
+                            <i class="fas fa-file-csv me-2"></i>Export as CSV
+                        </button>
+                        <button class="btn btn-outline-light" onclick="scheduleReport()">
+                            <i class="fas fa-clock me-2"></i>Schedule Reports
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Yield Trends Chart
+    const yieldCtx = document.getElementById('yieldTrendsChart').getContext('2d');
+    new Chart(yieldCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Actual Yield',
+                data: [4.2, 4.5, 4.8, 4.6, 4.9, 5.1],
+                borderColor: 'rgba(40, 167, 69, 1)',
+                tension: 0.4
+            }, {
+                label: 'Predicted Yield',
+                data: [4.3, 4.6, 4.9, 4.8, 5.1, 5.3],
+                borderColor: 'rgba(23, 162, 184, 1)',
+                tension: 0.4,
+                borderDash: [5, 5]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+
+    // Resource Utilization Chart
+    const resourceCtx = document.getElementById('resourceChart').getContext('2d');
+    new Chart(resourceCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Water', 'Fertilizer', 'Labor', 'Other'],
+            datasets: [{
+                data: [40, 25, 20, 15],
+                backgroundColor: [
+                    'rgba(23, 162, 184, 0.8)',
+                    'rgba(40, 167, 69, 0.8)',
+                    'rgba(255, 193, 7, 0.8)',
+                    'rgba(108, 117, 125, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+});
+
+function exportPDF() {
+    alert('Generating PDF report...');
+}
+
+function exportCSV() {
+    alert('Exporting data as CSV...');
+}
+
+function scheduleReport() {
+    alert('Opening report scheduler...');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="content-section glass-morphism">
+                    <h2 class="mb-4">Settings</h2>
+                    <div class="list-group">
+                        <a href="{{ url_for('profile') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Profile Settings</h5>
+                                <small>Update your profile information</small>
+                            </div>
+                        </a>
+                        <!-- Add more settings options here as needed -->
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Notification Preferences</h5>
+                                <small>Coming soon</small>
+                            </div>
+                            <p class="mb-1 text-muted">Manage your notification settings</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Privacy Settings</h5>
+                                <small>Coming soon</small>
+                            </div>
+                            <p class="mb-1 text-muted">Control your privacy preferences</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+

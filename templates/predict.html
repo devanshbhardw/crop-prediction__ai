@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="glass-card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">Crop Yield Prediction</h2>
+                    <p class="card-text">Enter your field conditions below to get a prediction for your crop yield.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="glass-card">
+                <div class="card-body">
+                    <form id="predictionForm" class="needs-validation" novalidate>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label for="crop_type" class="form-label text-white">Crop Type</label>
+                                <select class="form-select bg-dark text-white" id="crop_type" name="crop_type" required>
+                                    <option value="">Select a crop...</option>
+                                    <option value="rice">Rice</option>
+                                    <option value="wheat">Wheat</option>
+                                    <option value="maize">Maize</option>
+                                    <option value="chickpea">Chickpea</option>
+                                    <option value="kidneybeans">Kidney Beans</option>
+                                    <option value="pigeonpeas">Pigeon Peas</option>
+                                    <option value="mothbeans">Moth Beans</option>
+                                    <option value="mungbean">Mung Bean</option>
+                                    <option value="blackgram">Black Gram</option>
+                                    <option value="lentil">Lentil</option>
+                                    <option value="pomegranate">Pomegranate</option>
+                                    <option value="banana">Banana</option>
+                                    <option value="mango">Mango</option>
+                                    <option value="grapes">Grapes</option>
+                                    <option value="watermelon">Watermelon</option>
+                                    <option value="muskmelon">Muskmelon</option>
+                                    <option value="apple">Apple</option>
+                                    <option value="orange">Orange</option>
+                                    <option value="papaya">Papaya</option>
+                                    <option value="coconut">Coconut</option>
+                                    <option value="cotton">Cotton</option>
+                                    <option value="jute">Jute</option>
+                                    <option value="coffee">Coffee</option>
+                                </select>
+                                <div class="invalid-feedback text-white">Please select a crop type.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="temperature" class="form-label text-white">Temperature (°C)</label>
+                                <input type="number" class="form-control bg-dark text-white" id="temperature" name="temperature" 
+                                       required min="0" max="50" step="0.1" placeholder="20-35">
+                                <div class="invalid-feedback text-white">Please enter a valid temperature (0-50°C).</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="humidity" class="form-label text-white">Humidity (%)</label>
+                                <input type="number" class="form-control bg-dark text-white" id="humidity" name="humidity" 
+                                       required min="0" max="100" step="1" placeholder="30-90">
+                                <div class="invalid-feedback text-white">Please enter a valid humidity percentage (0-100%).</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="rainfall" class="form-label text-white">Rainfall (mm)</label>
+                                <input type="number" class="form-control bg-dark text-white" id="rainfall" name="rainfall" 
+                                       required min="0" step="0.1" placeholder="Annual rainfall">
+                                <div class="invalid-feedback text-white">Please enter a valid rainfall amount.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="nitrogen" class="form-label text-white">Nitrogen (kg/ha)</label>
+                                <input type="number" class="form-control bg-dark text-white" id="nitrogen" name="nitrogen" 
+                                       required min="0" step="1" placeholder="0-140">
+                                <div class="invalid-feedback text-white">Please enter a valid nitrogen value.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="phosphorus" class="form-label text-white">Phosphorus (kg/ha)</label>
+                                <input type="number" class="form-control bg-dark text-white" id="phosphorus" name="phosphorus" 
+                                       required min="0" step="1" placeholder="5-145">
+                                <div class="invalid-feedback text-white">Please enter a valid phosphorus value.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="potassium" class="form-label text-white">Potassium (kg/ha)</label>
+                                <input type="number" class="form-control bg-dark text-white" id="potassium" name="potassium" 
+                                       required min="0" step="1" placeholder="5-205">
+                                <div class="invalid-feedback text-white">Please enter a valid potassium value.</div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="ph" class="form-label text-white">pH Level</label>
+                                <input type="number" class="form-control bg-dark text-white" id="ph" name="ph" 
+                                       required min="0" max="14" step="0.1" placeholder="0-14">
+                                <div class="invalid-feedback text-white">Please enter a valid pH value (0-14).</div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-chart-line me-2"></i>Get Prediction
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card">
+                <div class="card-body">
+                    <h3 class="card-title">Prediction Result</h3>
+                    <div id="result" style="display: none;">
+                        <div class="alert alert-success">
+                            <div id="prediction"></div>
+                        </div>
+                    </div>
+                    <div id="noResult" class="text-center text-muted">
+                        <i class="fas fa-arrow-left me-2"></i>Fill out the form to get a prediction
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# Prediction submit handling is implemented in main.js #}
+{% endblock %}

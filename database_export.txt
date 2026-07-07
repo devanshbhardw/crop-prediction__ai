@@ -1,0 +1,137 @@
+CropPredict Database Export
+Generated on: 2026-07-07 10:37:07
+==================================================
+
+USERS
+--------------------------------------------------
+User ID: 1
+Username: devanshbhardwaj1
+Email: devansh@18thdigitech.net
+Full Name: Not set
+Organization: Not set
+Job Title: Not set
+Number of Predictions: 1
+------------------------------
+User ID: 2
+Username: test_user
+Email: test@example.com
+Full Name: Not set
+Organization: Not set
+Job Title: Not set
+Number of Predictions: 1
+------------------------------
+User ID: 3
+Username: Devansh Bhardwaj
+Email: nishant@18thdigitech.net
+Full Name: Not set
+Organization: Not set
+Job Title: Not set
+Number of Predictions: 1
+------------------------------
+User ID: 4
+Username: tester
+Email: tester@example.com
+Full Name: Not set
+Organization: Not set
+Job Title: Not set
+Number of Predictions: 0
+------------------------------
+User ID: 5
+Username: tester2
+Email: tester2@example.com
+Full Name: Not set
+Organization: Not set
+Job Title: Not set
+Number of Predictions: 0
+------------------------------
+User ID: 6
+Username: tester3
+Email: tester3@example.com
+Full Name: Not set
+Organization: Not set
+Job Title: Not set
+Number of Predictions: 0
+------------------------------
+User ID: 7
+Username: tester_openai
+Email: tester_openai@example.com
+Full Name: Not set
+Organization: Not set
+Job Title: Not set
+Number of Predictions: 0
+------------------------------
+User ID: 8
+Username: tester_ui
+Email: tester_ui@example.com
+Full Name: Not set
+Organization: Not set
+Job Title: Not set
+Number of Predictions: 0
+------------------------------
+User ID: 9
+Username: tester_openai2
+Email: tester_openai2@example.com
+Full Name: Not set
+Organization: Not set
+Job Title: Not set
+Number of Predictions: 0
+------------------------------
+
+PREDICTIONS
+--------------------------------------------------
+Prediction ID: 1
+Date: 2025-11-05 12:23:56.791043
+Crop: wheat
+Yield Value: 4.50 tons/hectare
+Environmental Parameters:
+  Temperature: 25.0°C
+  Humidity: 65.0%
+  Rainfall: 100.0mm
+Soil Parameters:
+  Nitrogen: 80.0 kg/ha
+  Phosphorus: 40.0 kg/ha
+  Potassium: 60.0 kg/ha
+  pH: 6.8
+Made by: test_user
+------------------------------
+Prediction ID: 2
+Date: 2025-11-05 12:25:37.892030
+Crop: maize
+Yield Value: 7141.60 tons/hectare
+Environmental Parameters:
+  Temperature: 0.0°C
+  Humidity: 0.0%
+  Rainfall: 0.0mm
+Soil Parameters:
+  Nitrogen: 0.0 kg/ha
+  Phosphorus: 0.0 kg/ha
+  Potassium: 0.0 kg/ha
+  pH: 7.0
+Made by: devanshbhardwaj1
+------------------------------
+Prediction ID: 3
+Date: 2026-07-07 04:22:28.201348
+Crop: rice
+Yield Value: 10861.12 tons/hectare
+Environmental Parameters:
+  Temperature: 0.0°C
+  Humidity: 0.0%
+  Rainfall: 0.0mm
+Soil Parameters:
+  Nitrogen: 0.0 kg/ha
+  Phosphorus: 0.0 kg/ha
+  Potassium: 0.0 kg/ha
+  pH: 7.0
+Made by: Devansh Bhardwaj
+------------------------------
+
+CONTACT SUBMISSIONS
+--------------------------------------------------
+Contact ID: 1
+Name: Test Person
+Email: contact@example.com
+Phone: 1234567890
+Date: 2025-11-05 12:23:56.850455
+Message:
+Test message
+------------------------------

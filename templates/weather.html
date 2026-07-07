@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="glass-card weather-hero">
+                <div class="card-body">
+                    <h2 class="card-title mb-2">AI Weather Intelligence</h2>
+                    <p class="mb-0" style="color: rgba(255,255,255,0.85);">Live conditions, smart forecasting, and recent climate patterns for better farm decisions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="glass-card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Weather Forecast</h4>
+                        <div class="input-group" style="max-width: 320px;">
+                            <input type="text" class="form-control bg-dark text-white" id="location" placeholder="Enter location" value="New York">
+                            <button class="btn btn-success" type="button" id="weather-search-btn" onclick="updateWeather()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="weatherSummary" class="alert mb-4" style="background: rgba(34, 211, 238, 0.16); border: 1px solid rgba(34, 211, 238, 0.3); color: #e9fbff;">Loading live weather data...</div>
+                    <div class="row g-4" id="weatherForecast">
+                        <div class="col-12 text-center text-muted">Fetching current conditions and forecast...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-body">
+                    <h4 class="mb-4">Weather Impact Analysis</h4>
+                    <canvas id="weatherImpactChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="glass-card mb-4">
+                <div class="card-body">
+                    <h4 class="mb-3">Weather Alerts</h4>
+                    <div id="weatherAlerts">
+                        <div class="alert alert-info">Weather advisories will appear here.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-body">
+                    <h4 class="mb-3">Past Weather</h4>
+                    <div id="weatherHistory" class="list-group bg-transparent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let weatherChart;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('weatherImpactChart').getContext('2d');
+    weatherChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Today', 'Tomorrow', '3d', '4d', '5d', '6d'],
+            datasets: [{
+                label: 'Temperature Trend',
+                data: [18, 21, 20, 22, 19, 23],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                tension: 0.4
+            }, {
+                label: 'Rain Probability',
+                data: [15, 25, 10, 40, 20, 5],
+                borderColor: 'rgba(54, 162, 235, 1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+
+    updateWeather();
+});
+
+async function updateWeather() {
+    const location = document.getElementById('location').value.trim() || 'New York';
+    const button = document.getElementById('weather-search-btn');
+    const summaryEl = document.getElementById('weatherSummary');
+    const forecastEl = document.getElementById('weatherForecast');
+    const alertsEl = document.getElementById('weatherAlerts');
+    const historyEl = document.getElementById('weatherHistory');
+
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    }
+
+    try {
+        const response = await fetch(`/api/weather?location=${encodeURIComponent(location)}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Unable to fetch weather data');
+        }
+
+        const current = data.current || {};
+        const forecast = data.forecast || [];
+        const history = data.history || [];
+
+        summaryEl.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h5 class="mb-1">${data.location?.name || location}</h5>
+                    <p class="mb-0">${current.description || 'Weather update'} · ${current.temperature ?? 'n/a'}°C</p>
+                </div>
+                <div class="text-end">
+                    <div class="fs-3">${current.icon || '🌦️'}</div>
+                    <small>Humidity ${current.humidity ?? 'n/a'}% · Wind ${current.wind_speed ?? 'n/a'} km/h</small>
+                </div>
+            </div>`;
+
+        forecastEl.innerHTML = forecast.slice(0, 4).map(item => `
+            <div class="col-md-3">
+                <div class="glass-card weather-card">
+                    <div class="card-body text-center">
+                        <h6>${item.date}</h6>
+                        <div class="fs-2 my-3">${item.icon || '🌦️'}</div>
+                        <h4 class="mb-2">${item.max_temp ?? 'n/a'}°C</h4>
+                        <span class="weather-pill">${item.description || 'Weather update'}</span>
+                        <p class="mt-2 mb-1" style="color: rgba(255,255,255,0.8);">Rain ${item.chance_of_rain ?? 'n/a'}%</p>
+                        <small style="color: rgba(255,255,255,0.7);">Min ${item.min_temp ?? 'n/a'}°C</small>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        alertsEl.innerHTML = forecast.slice(0, 2).map(item => `
+            <div class="alert ${item.chance_of_rain > 40 ? 'alert-warning' : 'alert-info'}">
+                <i class="${item.chance_of_rain > 40 ? 'fas fa-exclamation-triangle' : 'fas fa-info-circle'} me-2"></i>
+                <strong>${item.date}:</strong> ${item.chance_of_rain > 40 ? 'Heavy rain likely' : 'Mild conditions expected'} for ${data.location?.name || location}.
+            </div>
+        `).join('');
+
+        historyEl.innerHTML = history.slice(0, 4).map(item => `
+            <div class="list-group-item weather-history-item text-white">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${item.date}</h6>
+                    <small>${item.icon || '🌦️'}</small>
+                </div>
+                <p class="mb-1">Avg ${item.avg_temp ?? 'n/a'}°C · Rain ${item.precipitation ?? 'n/a'} mm</p>
+            </div>
+        `).join('');
+
+        if (weatherChart) {
+            weatherChart.data.labels = forecast.slice(0, 6).map(item => item.date.split('-').slice(1).join('/'));
+            weatherChart.data.datasets[0].data = forecast.slice(0, 6).map(item => item.max_temp ?? 0);
+            weatherChart.data.datasets[1].data = forecast.slice(0, 6).map(item => item.chance_of_rain ?? 0);
+            weatherChart.update();
+        }
+    } catch (error) {
+        summaryEl.innerHTML = `<div class="alert alert-danger mb-0">${error.message}</div>`;
+        forecastEl.innerHTML = '<div class="col-12 text-center text-muted">Unable to load weather data.</div>';
+        alertsEl.innerHTML = '<div class="alert alert-warning">Please try a different location.</div>';
+        historyEl.innerHTML = '';
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-search"></i>';
+        }
+    }
+}
+</script>
+{% endblock %}

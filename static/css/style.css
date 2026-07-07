@@ -1,0 +1,234 @@
+/* Variables */
+:root {
+    --primary-color: #6c63ff;
+    --secondary-color: #22d3ee;
+    --accent-color: #00c2ff;
+    --glass-bg: rgba(8, 15, 40, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.16);
+    --text-muted: rgba(231, 240, 255, 0.72);
+}
+
+/* Hover Effects */
+.hover-lift {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Body Background */
+body {
+    background: linear-gradient(135deg, #060816 0%, #111a3a 35%, #1c2552 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: white;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url('/static/images/ai_dashboard_bg.svg') center/cover no-repeat;
+    opacity: 0.16;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Glass Card Effect */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 12px 35px rgba(4, 8, 24, 0.45);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(34, 211, 238, 0.4);
+    box-shadow: 0 16px 45px rgba(34, 211, 238, 0.18);
+}
+
+.weather-hero {
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.9), rgba(34, 211, 238, 0.7));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.weather-card {
+    background: linear-gradient(135deg, rgba(14, 24, 56, 0.95), rgba(22, 45, 89, 0.9));
+    border: 1px solid rgba(34, 211, 238, 0.22);
+    border-radius: 16px;
+    min-height: 200px;
+}
+
+.weather-card .fs-2 {
+    filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.35));
+}
+
+.weather-pill {
+    display: inline-block;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.18);
+    color: #dff8ff;
+    font-size: 0.8rem;
+    border: 1px solid rgba(34, 211, 238, 0.25);
+}
+
+.weather-history-item {
+    border-radius: 12px;
+    margin-bottom: 0.65rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Form Styles */
+.form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: white;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    color: white;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Navigation */
+.navbar {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(10px);
+}
+
+.navbar-brand, .nav-link {
+    color: white !important;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.navbar-brand:hover, .nav-link:hover {
+    opacity: 1;
+}
+
+/* Landing Section */
+.landing-section {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 100px 0;
+    margin-bottom: 50px;
+}
+
+/* Step Circles */
+.step-circle {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    margin: 0 auto;
+}
+
+/* Call to Action Section */
+.cta-section {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 80px 0;
+}
+
+/* Feature Icons */
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+/* Modal Styles */
+.modal-content {
+    background: linear-gradient(135deg, rgba(30, 77, 43, 0.95), rgba(0, 100, 0, 0.95));
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+}
+
+.modal-header, .modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.form-control, .form-select {
+    background: rgba(33, 37, 41, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background: rgba(33, 37, 41, 0.9) !important;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+    color: white !important;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-select option {
+    background: #343a40;
+    color: white;
+}
+
+/* Loading Spinner */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-success {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.btn-primary:hover,
+.btn-success:hover {
+    filter: brightness(1.08);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Table Styles */
+.table {
+    color: white;
+}
+
+.table thead th {
+    border-color: var(--glass-border);
+}
+
+.table td {
+    border-color: var(--glass-border);
+}

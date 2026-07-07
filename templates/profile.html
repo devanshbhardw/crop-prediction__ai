@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Profile Summary Card -->
+        <div class="col-md-4 mb-4">
+            <div class="glass-morphism p-4">
+                <div class="text-center mb-4">
+                    <img src="{{ url_for('static', filename='images/' + current_user.profile_image) }}" 
+                         class="rounded-circle mb-3" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover;">
+                    <h3>{{ current_user.full_name or current_user.username }}</h3>
+                    <p class="text-muted">{{ current_user.job_title }}</p>
+                </div>
+                <div class="mb-4">
+                    <h5 class="mb-3">Contact Information</h5>
+                    <p><i class="fas fa-envelope me-2"></i> {{ current_user.email }}</p>
+                    {% if current_user.phone %}
+                    <p><i class="fas fa-phone me-2"></i> {{ current_user.phone }}</p>
+                    {% endif %}
+                    {% if current_user.website %}
+                    <p><i class="fas fa-globe me-2"></i> <a href="{{ current_user.website }}" target="_blank">Website</a></p>
+                    {% endif %}
+                </div>
+                <div class="mb-4">
+                    <h5 class="mb-3">About</h5>
+                    <p>{{ current_user.bio or 'No bio added yet.' }}</p>
+                </div>
+                <div>
+                    <h5 class="mb-3">Member Since</h5>
+                    <p><i class="fas fa-calendar me-2"></i> {{ current_user.date_joined.strftime('%B %Y') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Form -->
+        <div class="col-md-8">
+            <div class="glass-morphism p-4">
+                <h2 class="mb-4">Edit Profile</h2>
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Account Information -->
+                    <h5 class="mb-3">Account Information</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.username.label(class="form-label") }}
+                                {% if form.username.errors %}
+                                    {{ form.username(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.username.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.username(class="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.email.label(class="form-label") }}
+                                {% if form.email.errors %}
+                                    {{ form.email(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.email.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.email(class="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Information -->
+                    <h5 class="mb-3">Personal Information</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.full_name.label(class="form-label") }}
+                                {{ form.full_name(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.phone.label(class="form-label") }}
+                                {{ form.phone(class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Information -->
+                    <h5 class="mb-3">Professional Information</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.organization.label(class="form-label") }}
+                                {{ form.organization(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.job_title.label(class="form-label") }}
+                                {{ form.job_title(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                {{ form.expertise.label(class="form-label") }}
+                                {{ form.expertise(class="form-control", placeholder="e.g., Sustainable Farming, Crop Management, Agricultural Technology") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <h5 class="mb-3">Additional Information</h5>
+                    <div class="mb-4">
+                        <div class="mb-3">
+                            {{ form.bio.label(class="form-label") }}
+                            {{ form.bio(class="form-control", rows="4") }}
+                            <small class="text-muted">Share a brief description about yourself and your agricultural experience.</small>
+                        </div>
+                        <div class="mb-3">
+                            {{ form.website.label(class="form-label") }}
+                            {{ form.website(class="form-control", placeholder="https://") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.address.label(class="form-label") }}
+                            {{ form.address(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
