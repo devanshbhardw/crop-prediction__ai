@@ -105,9 +105,3 @@ Run the test suite with:
 4. Push your branch
 5. Open a pull request
 
-## License
-
-This project is licensed under the MIT License.# crop-prediction__ai
-# crop-prediction__ai
-# crop-prediction__ai
-# crop-prediction__ai
